@@ -1,387 +1,884 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portfolio Đỗ Năng An</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-K8f5x9M1Kyx+EV+4R6YysVpQ1g+l1dqgfpV9hJRlF0Qnxm3r7vUiMqeS+0O3zCp8fQEpglaw3r+SRGLEV5j0Ug==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <style>
-      :root {
-        --primary-color: #2d2d2d;
-        --accent-color: #ffcc00;
-        --overlay-color: rgba(0, 0, 0, 0.5);
-        --text-color: #eee;
-        --font-family: "Press Start 2P", cursive;
-      }
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: var(--font-family);
-        background: #000;
-        color: var(--text-color);
-        overflow-x: hidden;
-      }
-      /* Box chung đã có viền vàng */
-      .about-box {
-        padding: 1rem;
-        line-height: 1.8;
-      }
 
-      /* Tiêu đề chiếm cả chiều rộng, cách trên dưới  */
-      .about-title {
-        font-size: 1.5rem;
-        margin: 0 0 1rem;
-      }
-      .center-image {
-        display: block;
-        margin: 1em auto; /* 1em trên/dưới, tự động canh trái/phải */
-        max-width: 100%;   /* responsive */
-        height: auto;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio - Do Nang An | Unity Developer</title>
+  <meta name="description"
+    content="Portfolio of Do Nang An, Unity Game Developer specializing in mobile game development." />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #1a1a2e;
+      --secondary-color: #16213e;
+      --accent-color: #ffcc00;
+      --accent2-color: #00d4ff;
+      --text-color: #eee;
+      --muted-color: #aaa;
+      --font-pixel: "Press Start 2P", cursive;
+      --font-vt: "VT323", monospace;
+    }
 
-      /* Flex container cho ảnh + text */
-      .about-content {
-        display: flex;
-        align-items: flex-start; /* căn trên cùng nếu text dài hơn ảnh */
-        gap: 1rem; /* khoảng cách giữa ảnh và đoạn văn */
-      }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-      /* Tăng kích thước ảnh, giữ tỷ lệ */
-      .about-img {
-        width: 120px; /* hoặc giá trị bạn muốn */
-        height: auto;
-        image-rendering: pixelated;
-        border: 1px solid var(--accent-color);
-      }
+    body {
+      font-family: var(--font-pixel);
+      background: #000;
+      color: var(--text-color);
+      overflow-x: hidden;
+    }
 
-      /* Style cho đoạn mô tả */
-      .about-text {
-        margin: 0;
-        line-height: 1.4;
-        font-size: 1rem;
-      }
+    /* ─── BACKGROUND ─── */
+    .bg-video {
+      position: fixed;
+      top: 70px;
+      left: 0;
+      width: 100vw;
+      height: calc(100vh - 70px - 50px);
+      object-fit: cover;
+      filter: blur(8px) brightness(0.5);
+      z-index: -2;
+    }
 
-      section#about {
-        display: flex;
-        align-items: center; /* căn ảnh và text cùng chiều cao */
-        gap: 2rem; /* khoảng cách giữa ảnh và text */
-      }
+    .bg-overlay {
+      position: fixed;
+      top: 70px;
+      left: 0;
+      width: 100vw;
+      height: calc(100vh - 70px - 50px);
+      background: rgba(0, 0, 0, 0.55);
+      z-index: -1;
+    }
 
-      section#about img.about-img {
-        width: 160px; /* tăng hoặc thay đổi tùy ý */
-        height: auto;
-        border: 2px solid var(--accent-color);
-        image-rendering: pixelated;
-      }
-      /* Global video CSS */
-      .bg-video {
-        position: fixed;
-        top: calc(3rem); /* tương ứng header mới */
-        left: 0;
-        width: 100vw;
-        height: calc(100vh - 3rem - 3rem); /* header 3rem, footer 3rem */
-        object-fit: cover;
-        filter: blur(8px) brightness(0.7);
-        z-index: -2;
-      }
-      .bg-overlay {
-        position: fixed;
-        top: calc(3rem);
-        left: 0;
-        width: 100vw;
-        height: calc(100vh - 3rem - 3rem);
-        background: var(--overlay-color);
-        z-index: -1;
-      }
-      header {
-        position: relative;
-        background: var(--primary-color);
-        padding: 2rem 0; /* tăng chiều cao header */
-        display: flex;
-        align-items: center;
-        z-index: 2;
-      }
-      .profile-pic {
-        position: absolute;
-        left: 5px;
-        width: 160px;
-        height: 160px;
-        image-rendering: pixelated;
-        border: 2px solid var(--accent-color);
-      }
-      .header-content {
-        margin-left: 181px;
-        padding-left: 1rem;
-        text-align: left;
-        z-index: 2;
-      }
-      header h1 {
-        font-size: 2.5rem; /* tăng cỡ chữ tiêu đề */
-        margin: 0.25rem 0;
-      }
-      header p {
-        font-size: 1rem; /* tăng cỡ chữ phụ */
-        margin: 0.25rem 0;
-      }
-      .inst-icon {
-        height: 1.5em;
-        vertical-align: middle;
-        margin-left: 4px;
-        image-rendering: pixelated;
-      }
-      .about-text {
-        line-height: 1.8;
-      }
-      nav ul {
-        list-style: none;
-        display: flex;
-        gap: 1rem;
-        margin-top: 0.5rem;
-      }
-      nav a {
-        color: var(--accent-color);
-        text-decoration: none;
-        padding: 0.5rem 1rem; /* tăng padding cho nav */
-        border: 2px solid var(--accent-color);
-        display: inline-block;
-        image-rendering: pixelated;
-        font-size: 1rem; /* tăng cỡ chữ nav */
-      }
-      .container {
-        position: relative;
-        width: 90%;
-        max-width: 800px;
-        margin: 2rem auto;
-        padding: 1rem;
-        background: rgba(0, 0, 0, 0.7);
-        border: 4px solid var(--accent-color);
-        overflow: hidden;
-        z-index: 1;
-      }
-      section {
-        margin-bottom: 2rem;
-        position: relative;
-        z-index: 2;
-      }
-      h2 {
-        font-size: 1.2rem;
-        margin-bottom: 1rem;
-        border-left: 4px solid var(--accent-color);
-        padding-left: 0.5rem;
-      }
-      .projects {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-      }
-      .project {
-        background: #222;
-        border: 3px solid var(--accent-color);
-        padding: 0.5rem;
-        text-align: center;
-        image-rendering: pixelated;
-        position: relative;
-        z-index: 2;
-      }
-      .project video {
-        width: 100%;
-        height: auto;
-        display: block;
-        border: 2px solid var(--accent-color);
-      }
-      .btn {
-        display: inline-block;
-        margin-top: 0.5rem;
-        padding: 0.5rem 1rem;
-        background: var(--accent-color);
-        color: var(--primary-color);
-        text-decoration: none;
-        border: 2px solid #000;
-        image-rendering: pixelated;
-      }
-      footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100vw;
-        background: var(--primary-color);
-        text-align: center;
-        padding: 2rem 0; /* tăng chiều cao footer */
-        border-top: 4px solid var(--accent-color);
-        z-index: 2;
-      }
-      footer p {
-        font-size: 0.8rem;
-      }
-      .about-content-project {
-        display: flex;
-        flex-direction: column;   /* Xếp dọc thay vì ngang */
-        gap: 2rem;                /* Khoảng cách giữa các project */
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Global background video -->
-    <video class="bg-video" autoplay muted loop>
-      <source src="background.mp4" type="video/mp4" />
-    </video>
-    <audio autoplay loop id="bg-music">
-        <source src="background-music.mp3" type="audio/mpeg">
-      </audio>
-    <div class="bg-overlay"></div>
+    /* ─── HEADER ─── */
+    header {
+      position: sticky;
+      top: 0;
+      background: var(--primary-color);
+      border-bottom: 3px solid var(--accent-color);
+      display: flex;
+      align-items: center;
+      padding: 0.6rem 1.5rem;
+      gap: 1rem;
+      z-index: 100;
+      height: 70px;
+    }
 
-    <header>
-      <img src="profile-pixel.jpg" alt="Do Nang An" class="profile-pic" />
-      <div class="header-content">
-        <h1>Do Nang An - Unity developer</h1>
-        <p>2003 | Information Security (Software Security)</p>
-        <p>
-          Academy of cryptography techniques
-          <a href="https://www.actvn.edu.vn" target="_blank">
-            <img src="12.png" alt="Logo" class="inst-icon" />
-          </a>
+    .profile-pic {
+      width: 50px;
+      height: 50px;
+      border: 2px solid var(--accent-color);
+      image-rendering: pixelated;
+      flex-shrink: 0;
+    }
+
+    .header-info {
+      flex: 1;
+    }
+
+    .header-info h1 {
+      font-size: 0.75rem;
+      color: var(--accent-color);
+      line-height: 1.4;
+    }
+
+    .header-info .role {
+      font-size: 0.55rem;
+      color: var(--accent2-color);
+      margin-top: 0.2rem;
+    }
+
+    .header-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.3rem;
+    }
+
+    .tag {
+      font-size: 0.45rem;
+      padding: 2px 6px;
+      border: 1px solid var(--accent-color);
+      color: var(--accent-color);
+    }
+
+    .inst-icon {
+      height: 1.2em;
+      vertical-align: middle;
+      image-rendering: pixelated;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      background: var(--secondary-color);
+      border-bottom: 2px solid var(--accent-color);
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      position: sticky;
+      top: 70px;
+      z-index: 99;
+    }
+
+    nav a {
+      color: var(--accent-color);
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      font-size: 0.5rem;
+      border-right: 1px solid var(--accent-color);
+      transition: background 0.2s;
+    }
+
+    nav a:first-child {
+      border-left: 1px solid var(--accent-color);
+    }
+
+    nav a:hover {
+      background: var(--accent-color);
+      color: #000;
+    }
+
+    /* ─── LAYOUT ─── */
+    .page-wrapper {
+      max-width: 860px;
+      margin: 2rem auto 5rem;
+      padding: 0 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* ─── SECTION BOX ─── */
+    .section-box {
+      background: rgba(0, 0, 0, 0.75);
+      border: 3px solid var(--accent-color);
+      padding: 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-box h2 {
+      font-size: 0.85rem;
+      color: var(--accent-color);
+      border-left: 4px solid var(--accent-color);
+      padding-left: 0.6rem;
+      margin-bottom: 1.2rem;
+    }
+
+    /* ─── ABOUT ─── */
+    .about-layout {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+
+    .about-img {
+      width: 110px;
+      height: auto;
+      border: 2px solid var(--accent-color);
+      image-rendering: pixelated;
+      flex-shrink: 0;
+    }
+
+    .about-text-block p {
+      font-size: 0.58rem;
+      line-height: 2;
+      color: var(--text-color);
+    }
+
+    .about-text-block .school-line {
+      margin-top: 0.8rem;
+      font-size: 0.55rem;
+      color: var(--accent2-color);
+    }
+
+    /* ─── GAMES TABLE ─── */
+    .games-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .game-card {
+      border: 2px solid #444;
+      background: #111;
+      padding: 1rem;
+      position: relative;
+    }
+
+    .game-card:hover {
+      border-color: var(--accent-color);
+    }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .game-header h3 {
+      font-size: 0.7rem;
+      color: var(--accent-color);
+    }
+
+    .game-meta {
+      font-family: var(--font-vt);
+      font-size: 1rem;
+      color: var(--muted-color);
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .game-meta span {
+      background: #1e1e1e;
+      padding: 1px 6px;
+      border: 1px solid #333;
+    }
+
+    .game-video-wrap video {
+      width: 100%;
+      max-height: 220px;
+      object-fit: cover;
+      border: 2px solid var(--accent-color);
+      margin-bottom: 0.8rem;
+    }
+
+    .game-details {
+      font-family: var(--font-vt);
+      font-size: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .game-details .label {
+      color: var(--accent2-color);
+    }
+
+    .game-details a {
+      color: var(--accent-color);
+      text-decoration: none;
+      border-bottom: 1px dashed var(--accent-color);
+    }
+
+    .metrics-row {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+
+    .metric {
+      background: #1a1a1a;
+      border: 1px solid var(--accent-color);
+      padding: 4px 10px;
+      font-family: var(--font-vt);
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    .metric .m-label {
+      color: var(--muted-color);
+      font-size: 0.85rem;
+      display: block;
+    }
+
+    .metric .m-value {
+      color: var(--accent-color);
+    }
+
+    .placeholder {
+      color: #555;
+      font-style: italic;
+      font-family: var(--font-vt);
+      font-size: 0.95rem;
+    }
+
+    /* ─── SIGNATURE ACHIEVEMENT ─── */
+    .sig-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .sig-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sig-item label {
+      display: block;
+      font-size: 0.5rem;
+      color: var(--accent2-color);
+      margin-bottom: 0.3rem;
+    }
+
+    .sig-item p {
+      font-family: var(--font-vt);
+      font-size: 1rem;
+      line-height: 1.5;
+      color: var(--text-color);
+    }
+
+    .sig-full {
+      grid-column: 1 / -1;
+    }
+
+    /* ─── STRENGTHS ─── */
+    .strengths-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .strength-card {
+      background: #111;
+      border: 2px solid #333;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .strength-card .s-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--accent-color);
+    }
+
+    .strength-card h4 {
+      font-size: 0.55rem;
+      color: var(--accent2-color);
+      margin-bottom: 0.4rem;
+    }
+
+    .strength-card p {
+      font-family: var(--font-vt);
+      font-size: 1rem;
+      line-height: 1.5;
+      color: var(--muted-color);
+    }
+
+    /* ─── SKILLS / TOOLS ─── */
+    .skills-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .skill-tag {
+      background: #111;
+      border: 2px solid var(--accent-color);
+      padding: 0.4rem 0.8rem;
+      font-size: 0.45rem;
+      color: var(--accent-color);
+    }
+
+    .skill-section-title {
+      font-size: 0.55rem;
+      color: var(--accent2-color);
+      margin: 1rem 0 0.5rem;
+      border-bottom: 1px solid #333;
+      padding-bottom: 0.3rem;
+    }
+
+    /* ─── CONTACT ─── */
+    .contact-row {
+      display: flex;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-icon {
+      color: var(--accent-color);
+      text-decoration: none;
+      font-size: 1.5rem;
+      transition: color 0.2s, transform 0.2s;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .contact-icon span {
+      font-size: 0.4rem;
+      color: var(--muted-color);
+    }
+
+    .contact-icon:hover {
+      color: var(--accent2-color);
+      transform: scale(1.1);
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      background: var(--primary-color);
+      border-top: 3px solid var(--accent-color);
+      padding: 0.5rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      height: 50px;
+    }
+
+    footer p {
+      font-size: 0.45rem;
+      color: var(--muted-color);
+    }
+
+    .volume-ctrl {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--muted-color);
+    }
+
+    #volume-slider {
+      width: 80px;
+      accent-color: var(--accent-color);
+    }
+
+    /* ─── ANIMATION GIF ─── */
+    .anim-showcase {
+      display: block;
+      margin: 0.8rem auto;
+      max-width: 300px;
+      border: 2px solid var(--accent-color);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Background -->
+  <video class="bg-video" autoplay muted loop>
+    <source src="background.mp4" type="video/mp4" />
+  </video>
+  <div class="bg-overlay"></div>
+
+  <audio autoplay loop id="bg-music">
+    <source src="background-music.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- ══ HEADER ══ -->
+  <header>
+    <img src="profile-pixel.jpg" alt="Do Nang An" class="profile-pic" />
+    <div class="header-info">
+      <h1>Do Nang An</h1>
+      <div class="role">Unity Game Developer</div>
+      <div class="header-tags">
+        <span class="tag">GAME DEV</span>
+        <span class="tag">MOBILE</span>
+        <span class="tag">1 YEAR EXPERIENCE</span>
+      </div>
+    </div>
+    <div style="font-size:0.5rem; color: var(--muted-color); text-align:right; padding-right: 0.8rem;">
+      <a href="https://actvn.edu.vn/" target="_blank"
+        style="color: var(--muted-color); text-decoration: none; border-bottom: 1px dashed var(--muted-color);">Academy
+        of Cryptography Techniques</a>
+      <a href="https://actvn.edu.vn/" target="_blank" style="margin-right: -0.4rem;">
+        <img src="12.png" alt="ACTVN" class="inst-icon" style="height: 60px; width: 60px; vertical-align: middle;" />
+      </a>
+    </div>
+  </header>
+
+  <!-- ══ NAV ══ -->
+  <nav>
+    <a href="#about">About</a>
+    <a href="#games">Games</a>
+    <a href="#personal">Personal</a>
+    <a href="#achievement">Achievement</a>
+    <a href="#strengths">Strengths</a>
+    <a href="#tools">Tools</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <!-- ══ CONTENT ══ -->
+  <div class="page-wrapper">
+
+    <!-- ABOUT -->
+    <div class="section-box" id="about">
+      <h2>▶ About Me</h2>
+      <div class="about-layout">
+        <img src="peacee1.png" alt="Do Nang An" class="about-img" />
+        <div class="about-text-block">
+          <p>
+            Hello! I'm <strong style="color:var(--accent-color)">Do Nang An</strong>, a Unity Game Developer born in
+            2003.
+            I enjoy building games that feel great to play — from mechanics to visuals to performance.
+            Outside of code, I'm into music, cycling, and (of course) games.
+          </p>
+          <p class="school-line">
+            📚 Information Security (Software Security)<br>
+            🏫 <a href="https://actvn.edu.vn/" target="_blank"
+              style="color: var(--accent2-color); text-decoration: none; border-bottom: 1px dashed var(--accent2-color);">Academy
+              of Cryptography Techniques</a>
+          </p>
+        </div>
+      </div>
+      <div
+        style="margin-top:1rem; display:flex; align-items:center; gap:1rem; border-top: 1px solid #333; padding-top:1rem;">
+        <img src="animation.gif" alt="Animation showcase"
+          style="height:80px; image-rendering:pixelated; border: 2px solid var(--accent-color);" />
+        <p style="font-family:var(--font-vt); font-size:1rem; color:var(--muted-color); line-height:1.6;">I want to be
+          part of products that I can genuinely contribute to — and see them succeed. There's nothing more satisfying
+          than watching something you helped build reach real players and make a positive impact on their experience.
         </p>
-        <nav>
-          <ul>
-            <li><a>DEVELOPER</a></li>
-            <li><a>GAME</a></li>
-            <li><a>6+ MONTH EXPERIENCE</a></li>
-          </ul>
-        </nav>
       </div>
-    </header>
-    <div class="container">
-      <section id="about">
-        <div class="box about-box">
-          <!-- Tiêu đề đứng riêng 1 dòng -->
-          <h2 class="about-title">About Me</h2>
-
-          <!-- Container con: ảnh và mô tả nằm ngang -->
-          <div class="about-content">
-            <img src="peacee1.png" alt="Do Nang An" class="about-img" />
-            <p class="about-text">
-              Hello! I’m Do Nang An, majoring in Information Security at the
-              Academy of Cryptographic Techniques. I’m 22, like music, cycling,
-              game and coding.<br />
-              <br />
-              Extensive experience in participating in extracurricular
-              activities at the Club in the two areas of Communications and
-              Human Resources. Therefore, with good research, communication,
-              teamwork and information transfer skills, it will help you easily
-              integrate and work effectively
-            </p>
-          </div>
-        </div>
-      </section>
     </div>
-    <div class="container">
-      <section id="skills">
-        <div class="box about-box">
-          <!-- Tiêu đề đứng riêng 1 dòng -->
-          <h2 class="about-title">My Skills</h2>
 
-          <!-- Container con: ảnh và mô tả nằm ngang -->
-          <div class="about-content">
-            <p class="about-text">
-                <ul>
-                    <li>C# Programming, OOP, Physics & Collision, UI Canvas & Basic UX</li>
-                    <li>
-                        I’m adept at handling animations
-                        <img src="animation.gif" alt="Mô tả GIF" class="center-image" width="300" height="auto">
-                    </li>
-                    <li>Algorithm:<span style="color: aqua;"> A* pathfinding, searching algorithm, arrange algorithm...</span></li>
-                    <li>Basic design pattern: <span style="color: aqua;">Singleton, State Machine, Object Pooling, Observer, Factory Method...</span></li>
-                    <li>Soft Skills:  Good self-learning ability, passionate about work, good communication</li>
-                </ul>
-            </p>
-          </div>
-        </div>
-      </section>
-    </div>
-    <div class="container">
-        <section id="projects">
-          <div class="box about-box">
-            <!-- Tiêu đề đứng riêng 1 dòng -->
-            <h2 class="about-title">Projects</h2>
-            <div class="about-content-project">
-                <div class="project">
-                    <video class="project_video" autoplay muted loop>
-                        <source src="Cleaning.mp4" type="video/mp4" />
-                      </video>
-                    <div class="project-content">
-                      <h3>Restaurant Manager</h3>
-                      <p>Offine game simulating restaurant management</p>
-                      <a href="#" class="btn">WATCH MORE</a>
-                    </div>
-                  </div>
-                  <div class="project">
-                    <video class="project_video" autoplay muted loop>
-                        <source src="TienLenMienNam.mp4" type="video/mp4" />
-                      </video>
-                    <div class="project-content">
-                      <h3>Tien Len Mien Nam</h3>
-                      <p>Using the database stored on Firebase Realtime Database, the online poker game(Tien Len Mien Nam) is integrated with a security mechanism using ECDSA</p>
-                      <a href="#" class="btn">WATCH MORE</a>
-                    </div>
-                  </div>
+    <!-- PUBLISHED GAMES -->
+    <div class="section-box" id="games">
+      <h2>▶ Published Games</h2>
+      <div class="games-list">
+
+        <!-- Game 1 -->
+        <div class="game-card">
+          <div class="game-header">
+            <h3>🌈 Color Tray Puzzle</h3>
+            <div class="game-meta">
+              <span>2025</span>
+              <span>Mobile (Android)</span>
+              <span>Unity Developer</span>
+              <span>Team: 4 members</span>
             </div>
           </div>
-        </section>
-      </div>
-      <div class="container">
-        <section id="contact">
-          <div class="box about-box">
-            <!-- Tiêu đề đứng riêng 1 dòng -->
-            <h2 class="about-title">Contact</h2>
-            <div class="about-content-project">
-                <div class="contact-links">
-                    <div class="contact-links">
-                        <a href="https://www.instagram.com/peacee.1" target="_blank" class="contact-icon" aria-label="Instagram">
-                          <i class="fab fa-instagram"></i>
-                          <span class="sr-only">Instagram</span>
-                        </a>
-                        <a href="mailto:donangan6903@gmail.com" class="contact-icon" aria-label="Email">
-                          <i class="fas fa-envelope"></i>
-                          <span class="sr-only">Email</span>
-                        </a>
-                        <a href="https://www.facebook.com/onangan.2024/" target="_blank" class="contact-icon" aria-label="Facebook">
-                          <i class="fab fa-facebook"></i>
-                          <span class="sr-only">Facebook</span>
-                        </a>
-                        <a href="https://www.linkedin.com/in/do-nang-an-b258b2307/" target="_blank" class="contact-icon" aria-label="LinkedIn">
-                          <i class="fab fa-linkedin"></i>
-                          <span class="sr-only">LinkedIn</span>
-                        </a>
-                      </div>
-                  </div>
+          <div class="game-video-wrap">
+            <img src="ColorTrayPuzzle.png" alt="Color Tray Puzzle"
+              style="width:50%; height:auto; border: 2px solid var(--accent-color); display:block; margin: 0 auto;" />
+          </div>
+          <div class="game-details">
+            <div>
+              <span class="label">🔗 Link: </span>
+              <a href="https://play.google.com/store/apps/details?id=com.g3.colortray" target="_blank"
+                style="color: var(--accent-color);">▶ Google Play</a>
+              &nbsp;|&nbsp;
+              <a href="https://youtu.be/UTbFeBdD158" target="_blank" style="color: var(--accent2-color);">▶ YouTube</a>
+            </div>
+            <div>
+              <span class="label">📋 Description: </span>
+              A basic puzzle game where players solve challenges by sorting and arranging colorful boxes
             </div>
           </div>
-        </section>
+          <div class="metrics-row">
+            <div class="metric">
+              <span class="m-label">Downloads</span>
+              <span class="m-value placeholder">—</span>
+            </div>
+            <div class="metric">
+              <span class="m-label">D1 Retention</span>
+              <span class="m-value placeholder">—</span>
+            </div>
+            <div class="metric">
+              <span class="m-label">D7 Retention</span>
+              <span class="m-value placeholder">—</span>
+            </div>
+            <div class="metric">
+              <span class="m-label">Revenue/eCPM</span>
+              <span class="m-value placeholder">—</span>
+            </div>
+          </div>
+        </div>
+
       </div>
-    <footer>
-      <p>&copy; 2025 Do Nang An</p>
-      ---------------------------------------------
-      <p>Video backgrounds from Silly Potato</p>
-      ---------------------------------------------
-      <br class="volume-control">
-        <br>Music control<br></p>
-        <i class="fas fa-volume-down"></i>
-        <input type="range" id="volume-slider" min="0" max="1" step="0.01">
-        <i class="fas fa-volume-up"></i>
+    </div>
+
+    <!-- PERSONAL PROJECTS -->
+    <div class="section-box" id="personal">
+      <h2>🔧 Personal Projects</h2>
+      <div class="games-list">
+
+        <!-- Project 1 -->
+        <div class="game-card">
+          <div class="game-header">
+            <h3>🃏 Tien Len Mien Nam</h3>
+            <div class="game-meta">
+              <span>2024</span>
+
+              <span>Unity Developer</span>
+
+            </div>
+          </div>
+          <div class="game-details">
+            <div>
+              <span class="label">🔗 Link: </span>
+              <a href="https://drive.google.com/file/d/1srdQFPZaNxFjZp8rg_hOTuBec7FHUPmu/view?usp=drive_link"
+                target="_blank" style="color: var(--accent2-color);">▶ Watch Video</a>
+            </div>
+            <div>
+              <span class="label">📋 Description: </span>
+              Online poker game (Tiến Lên Miền Nam) using Firebase Realtime Database with ECDSA security mechanism
+            </div>
+            <div>
+              <span class="label">🛠 Tech: </span>
+              Unity · Firebase · ECDSA · C#
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="game-card">
+          <div class="game-header">
+            <h3>🍽 Cleaning! Restaurant</h3>
+            <div class="game-meta">
+              <span>2024</span>
+              <span>Unity Developer</span>
+            </div>
+          </div>
+
+          <div class="game-details">
+            <div>
+              <span class="label">🔗 Link: </span>
+              <a href="https://drive.google.com/file/d/1S7-vgHx81oVwd8nJCrOAMSvY1VSOATK0/view?usp=drive_link"
+                target="_blank" style="color: var(--accent2-color);">▶ Watch Video</a>
+            </div>
+            <div>
+              <span class="label">📋 Description: </span>
+              Offline simulation game where players manage and clean a restaurant
+            </div>
+            <div>
+              <span class="label">🛠 Tech: </span>
+              Unity · C#
+            </div>
+          </div>
+        </div>
+
       </div>
-    </footer>
-    <script>
-        const audio = document.getElementById('bg-music');
-        const slider = document.getElementById('volume-slider');
-        // Set initial slider value to current volume
-        slider.value = audio.volume;
-        slider.addEventListener('input', () => {
-          audio.volume = slider.value;
-        });
-      </script>
-  </body>
+    </div>
+
+    <!-- SIGNATURE ACHIEVEMENT -->
+    <div class="section-box" id="achievement">
+      <h2>⭐ Signature Achievement</h2>
+      <div class="sig-grid">
+
+        <div class="sig-item sig-full">
+          <label>BEST GAME</label>
+          <p style="color:var(--accent-color); font-size:1.1rem;">🌈 Color Tray Puzzle</p>
+        </div>
+
+        <div class="sig-item">
+          <label>🔗 Link to Play / Video</label>
+          <p>
+            <a href="https://play.google.com/store/apps/details?id=com.g3.colortray" target="_blank"
+              style="color:var(--accent-color); font-family:var(--font-vt); text-decoration:none;">▶ Google Play</a>
+            &nbsp;|&nbsp;
+            <a href="https://youtu.be/UTbFeBdD158" target="_blank"
+              style="color:var(--accent2-color); font-family:var(--font-vt); text-decoration:none;">▶ YouTube</a>
+          </p>
+        </div>
+
+        <div class="sig-item">
+          <label>📅 Development Duration</label>
+          <p>3 weeks</p>
+        </div>
+
+        <div class="sig-item sig-full">
+          <label>🛠 My Specific Contributions</label>
+          <p>
+            <strong style="color:var(--accent-color);">Full-cycle Unity Game Developer</strong><br><br>
+            • Solely responsible for designing and implementing the entire game architecture and codebase<br>
+            • Developed core puzzle mechanics including grid system, color sorting logic and win-condition
+            validation<br>
+            • Built UI system, game state machine, and scalable level management structure<br>
+            • Implemented Android build pipeline and independently published to Google Play<br>
+            • Optimized performance.
+          </p>
+        </div>
+
+        <div class="sig-item">
+          <label>🏆 Proudest Metric / Outcome</label>
+          <p>Successfully solo-developed and published to Google Play in 3 weeks</p>
+        </div>
+
+        <div class="sig-item">
+          <label>📖 Lessons Learned</label>
+          <p>
+            • Managing every aspect of a solo project builds strong prioritization and time management skills<br>
+            • Performance optimization (Object Pooling, draw calls) has a real, measurable impact on low-end Android
+            devices<br>
+            • The Android publishing pipeline has many hidden complexities — understanding it end-to-end is a valuable
+            skill
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CORE STRENGTHS -->
+    <div class="section-box" id="strengths">
+      <h2>💪 Core Strengths</h2>
+      <div class="strengths-grid">
+
+        <div class="strength-card">
+          <div class="s-icon"><i class="fas fa-star"></i></div>
+          <h4>PRIMARY EXPERTISE</h4>
+          <p>Unity Game Development — gameplay systems, state machines, physics & collision</p>
+        </div>
+
+        <div class="strength-card">
+          <div class="s-icon"><i class="fas fa-layer-group"></i></div>
+          <h4>SECONDARY EXPERTISE</h4>
+          <p>Proficient in mobile game architecture — capable of building scalable, maintainable systems for Android and
+            iOS platforms</p>
+        </div>
+
+        <div class="strength-card">
+          <div class="s-icon"><i class="fas fa-bolt"></i></div>
+          <h4>UNIQUE SKILL</h4>
+          <p>Basic game design ability in the puzzle genre — capable of crafting engaging level layouts, intuitive
+            mechanics, and balanced difficulty curves that keep players challenged without frustration</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TOOLS & TECH -->
+    <div class="section-box" id="tools">
+      <h2>🛠 Tools & Tech</h2>
+
+      <div class="skill-section-title">LANGUAGES</div>
+      <div class="skills-grid">
+        <span class="skill-tag">C</span>
+        <span class="skill-tag">C#</span>
+        <span class="skill-tag">C++</span>
+        <span class="skill-tag">JS</span>
+        <span class="skill-tag">Python</span>
+      </div>
+
+      <div class="skill-section-title">ENGINE & FRAMEWORK</div>
+      <div class="skills-grid">
+        <span class="skill-tag">Unity</span>
+        <span class="skill-tag">Android Studio</span>
+        <span class="skill-tag">SmartFoxServer</span>
+      </div>
+
+      <div class="skill-section-title">ARCHITECTURE & PATTERNS</div>
+      <div class="skills-grid">
+        <span class="skill-tag">SOLID</span>
+        <span class="skill-tag">Singleton</span>
+        <span class="skill-tag">State Machine</span>
+        <span class="skill-tag">Object Pooling</span>
+        <span class="skill-tag">Observer</span>
+        <span class="skill-tag">Factory Method</span>
+      </div>
+
+      <div class="skill-section-title">ALGORITHMS</div>
+      <div class="skills-grid">
+        <span class="skill-tag">Pathfinding</span>
+        <span class="skill-tag">Search Algorithms</span>
+        <span class="skill-tag">Sorting / Arrange</span>
+        <span class="skill-tag">Flood Fill</span>
+        <span class="skill-tag">Backtracking</span>
+      </div>
+
+      <div class="skill-section-title">ANIMATION</div>
+      <div class="skills-grid">
+        <span class="skill-tag">DOTween</span>
+        <span class="skill-tag">Ragdoll Animation</span>
+      </div>
+
+      <div class="skill-section-title">UI / UX & DESIGN</div>
+      <div class="skills-grid">
+        <span class="skill-tag">Unity UI Canvas</span>
+        <span class="skill-tag">Figma</span>
+        <span class="skill-tag">Canva</span>
+        <span class="skill-tag">Blender</span>
+        <span class="skill-tag">PTS</span>
+      </div>
+
+      <div class="skill-section-title">TOOLS</div>
+      <div class="skills-grid">
+        <span class="skill-tag">Visual Studio</span>
+        <span class="skill-tag">Git / GitHub</span>
+        <span class="skill-tag">Android Build (Gradle)</span>
+      </div>
+
+      <div class="skill-section-title">OTHER</div>
+      <div class="skills-grid">
+        <span class="skill-tag">Firebase</span>
+        <span class="skill-tag">Docker</span>
+        <span class="skill-tag">SQL Server</span>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="section-box" id="contact">
+      <h2>📬 Contact</h2>
+      <div class="contact-row">
+        <a href="https://www.instagram.com/peacee.1" target="_blank" class="contact-icon">
+          <i class="fab fa-instagram"></i>
+          <span>Instagram</span>
+        </a>
+        <a href="mailto:donangan6903@gmail.com" class="contact-icon">
+          <i class="fas fa-envelope"></i>
+          <span>Email</span>
+        </a>
+        <a href="https://www.facebook.com/onangan.2024/" target="_blank" class="contact-icon">
+          <i class="fab fa-facebook"></i>
+          <span>Facebook</span>
+        </a>
+        <a href="https://www.linkedin.com/in/do-nang-an-b258b2307/" target="_blank" class="contact-icon">
+          <i class="fab fa-linkedin"></i>
+          <span>LinkedIn</span>
+        </a>
+      </div>
+      <p style="font-family:var(--font-vt); font-size:0.95rem; color:var(--muted-color); margin-top:0.8rem;">
+        📧 donangan6903@gmail.com
+      </p>
+    </div>
+
+  </div><!-- end page-wrapper -->
+
+  <!-- ══ FOOTER ══ -->
+  <footer>
+    <p>© 2025 Do Nang An &nbsp;|&nbsp; Video BG: Silly Potato</p>
+    <div class="volume-ctrl">
+      <i class="fas fa-volume-down"></i>
+      <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5" />
+      <i class="fas fa-volume-up"></i>
+    </div>
+  </footer>
+
+  <script>
+    const audio = document.getElementById('bg-music');
+    const slider = document.getElementById('volume-slider');
+    audio.volume = 0.5;
+    slider.value = audio.volume;
+    slider.addEventListener('input', () => { audio.volume = slider.value; });
+
+    // Smooth scroll for nav — offset for sticky header + nav
+    document.querySelectorAll('nav a').forEach(link => {
+      link.addEventListener('click', e => {
+        const href = link.getAttribute('href');
+        if (href && href.startsWith('#')) {
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) {
+            const headerH = document.querySelector('header')?.offsetHeight || 70;
+            const navH = document.querySelector('nav')?.offsetHeight || 35;
+            const offset = headerH + navH + 8;
+            const top = target.getBoundingClientRect().top + window.scrollY - offset;
+            window.scrollTo({ top, behavior: 'smooth' });
+          }
+        }
+      });
+    });
+  </script>
+</body>
+
 </html>
