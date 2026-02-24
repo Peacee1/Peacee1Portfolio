@@ -348,6 +348,41 @@
       border: 2px solid #333;
       padding: 1rem;
       text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
+    }
+
+    .strength-card:hover {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 10px var(--accent-color)40;
+    }
+
+    .strength-card:active {
+      transform: scale(0.97);
+    }
+
+    .strength-card.selected {
+      border-color: var(--accent-color);
+      background: #1a1a00;
+      box-shadow: 0 0 16px var(--accent-color)80;
+    }
+
+    .strength-card.selected .s-icon {
+      animation: pulse-icon 0.6s ease;
+    }
+
+    @keyframes pulse-icon {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.4);
+      }
+
+      100% {
+        transform: scale(1);
+      }
     }
 
     .strength-card .s-icon {
@@ -860,6 +895,15 @@
     audio.volume = 0.5;
     slider.value = audio.volume;
     slider.addEventListener('input', () => { audio.volume = slider.value; });
+
+    // Strength card click toggle
+    document.querySelectorAll('.strength-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const wasSelected = card.classList.contains('selected');
+        document.querySelectorAll('.strength-card').forEach(c => c.classList.remove('selected'));
+        if (!wasSelected) card.classList.add('selected');
+      });
+    });
 
     // Smooth scroll for nav — offset for sticky header + nav
     document.querySelectorAll('nav a').forEach(link => {
