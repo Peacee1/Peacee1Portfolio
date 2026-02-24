@@ -316,6 +316,74 @@
       .sig-grid {
         grid-template-columns: 1fr;
       }
+
+      /* ── Header ── */
+      header {
+        height: auto;
+        padding: 0.5rem 0.8rem;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+
+      .profile-pic {
+        width: 38px;
+        height: 38px;
+      }
+
+      .header-info h1 {
+        font-size: 0.6rem;
+      }
+
+      .header-info .role {
+        font-size: 0.45rem;
+      }
+
+      .header-tags {
+        gap: 0.3rem;
+      }
+
+      .tag {
+        font-size: 0.35rem;
+        padding: 2px 5px;
+      }
+
+      /* Hide school text on mobile, keep logo */
+      header>div:last-child>a:first-child {
+        display: none;
+      }
+
+      .inst-icon {
+        height: 40px !important;
+        width: 40px !important;
+      }
+
+      /* ── Nav ── */
+      nav {
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        justify-content: flex-start;
+        padding: 0 0.5rem;
+      }
+
+      nav a {
+        font-size: 0.45rem;
+        padding: 0.5rem 0.6rem;
+        flex-shrink: 0;
+      }
+
+      /* ── Footer ── */
+      footer {
+        flex-direction: column;
+        gap: 0.4rem;
+        text-align: center;
+        padding: 0.6rem;
+        font-size: 0.65rem;
+      }
+
+      .volume-control {
+        justify-content: center;
+      }
     }
 
     .sig-item label {
@@ -417,6 +485,14 @@
       padding: 0.4rem 0.8rem;
       font-size: 0.45rem;
       color: var(--accent-color);
+      cursor: default;
+      transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    }
+
+    .skill-tag:hover {
+      background: var(--accent-color);
+      color: var(--primary-color);
+      box-shadow: 0 0 8px var(--accent-color)80;
     }
 
     .skill-section-title {
@@ -895,6 +971,15 @@
     audio.volume = 0.5;
     slider.value = audio.volume;
     slider.addEventListener('input', () => { audio.volume = slider.value; });
+
+    // Skill tag → Google search on click
+    document.querySelectorAll('.skill-tag').forEach(tag => {
+      tag.style.cursor = 'pointer';
+      tag.addEventListener('click', () => {
+        const query = encodeURIComponent(tag.textContent.trim());
+        window.open(`https://www.google.com/search?q=${query}`, '_blank');
+      });
+    });
 
     // Strength card click toggle
     document.querySelectorAll('.strength-card').forEach(card => {
