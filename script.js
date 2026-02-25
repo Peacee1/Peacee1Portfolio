@@ -495,8 +495,14 @@ function combatMovementLoop(timestamp) {
       const dist = Math.sqrt(dx * dx + dy * dy);
 
       if (dist > 5) {
-        p.vx = (dx / dist) * COMBAT_SPEED * 1.2;
-        p.vy = (dy / dist) * COMBAT_SPEED * 1.2;
+        // Homing with wavy (snaking) effect
+        const angle = Math.atan2(dy, dx);
+        // Oscillation: amplitude of 0.8 radians, frequency varied per projectile
+        const wavyAngle = angle + Math.sin(timestamp * 0.005 * p.freq + p.offset) * p.amp;
+
+        const speed = COMBAT_SPEED * 2.5;
+        p.vx = Math.cos(wavyAngle) * speed;
+        p.vy = Math.sin(wavyAngle) * speed;
       }
 
       p.x += p.vx * dt;
@@ -512,7 +518,21 @@ function combatMovementLoop(timestamp) {
       // Collision detection
       const hitDist = 30; // proximity for hit
       if (dist < hitDist) {
-        triggerDeath();
+        if (isBlocking) {
+          // Deflect/Destroy projectile
+          p.el.remove();
+          projectiles.splice(index, 1);
+          console.info("Combat: Projectile blocked!");
+
+          // If all projectiles are gone, Boss attacks again
+          if (projectiles.length === 0 && !isDead) {
+            setTimeout(() => {
+              if (isCombatMode && !isDead) startBossAttack();
+            }, 1000);
+          }
+        } else {
+          triggerDeath();
+        }
       }
     });
   }
@@ -691,9 +711,13 @@ function startBossAttack() {
           el: el,
           x: spawnX,
           y: spawnY,
-          vx: (Math.random() - 0.5) * 100,
-          vy: (Math.random() - 0.5) * 100,
-          rotation: 0
+          vx: (Math.random() - 0.5) * 50,
+          vy: (Math.random() - 0.5) * 50,
+          rotation: Math.random() * 360,
+          // Wavy parameters
+          offset: Math.random() * Math.PI * 2,
+          freq: 0.8 + Math.random() * 1.5, // Frequency of oscillation
+          amp: 0.5 + Math.random() * 0.5   // Amplitude in radians
         };
         projectiles.push(p);
       }, i * 300); // staggered spawn
