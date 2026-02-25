@@ -621,7 +621,7 @@
       bottom: calc(100% - 50px);
       height: 160px;
       image-rendering: pixelated;
-      pointer-events: none;
+      cursor: pointer;
     }
 
     @keyframes run-right {
@@ -1120,8 +1120,58 @@
       runningRight = !runningRight;
     }
 
-    footerChar.addEventListener('animationend', startRun);
+    footerChar.addEventListener('animationend', () => { if (!isIdle) startRun(); });
     startRun(); // kick off
+
+    // Click to toggle idle / run
+    let isIdle = false;
+    let savedLeft = null;
+    let savedFacingLeft = false;
+
+    footerChar.addEventListener('click', () => {
+      isIdle = !isIdle;
+      if (isIdle) {
+        // Freeze at current position
+        savedLeft = footerChar.getBoundingClientRect().left;
+        savedFacingLeft = !runningRight;
+        footerChar.style.animation = 'none';
+        footerChar.style.left = savedLeft + 'px';
+        footerChar.style.transform = savedFacingLeft ? 'scaleX(-1)' : 'scaleX(1)';
+        footerChar.src = 'animation1.gif';
+      } else {
+        // Resume from saved position in same direction
+        footerChar.src = 'animation3.gif';
+        const screenW = window.innerWidth;
+        const target = savedFacingLeft ? -180 : screenW + 20;
+        const dist = Math.abs(target - savedLeft);
+        const fullDist = screenW + 200;
+        const duration = Math.round(RUN_DURATION * dist / fullDist);
+        const scaleX = savedFacingLeft ? -1 : 1;
+
+        // Inject one-shot keyframe
+        const styleId = 'resume-kf';
+        document.getElementById(styleId)?.remove();
+        const s = document.createElement('style');
+        s.id = styleId;
+        s.textContent = `@keyframes resume-run {
+          from { left: ${savedLeft}px; transform: scaleX(${scaleX}); }
+          to   { left: ${target}px;   transform: scaleX(${scaleX}); }
+        }`;
+        document.head.appendChild(s);
+
+        footerChar.style.transform = '';
+        footerChar.style.left = '';
+        footerChar.style.animation = 'none';
+        footerChar.offsetHeight; // reflow
+        footerChar.style.animation = `resume-run ${duration}ms linear`;
+
+        // After this one-shot, hand back to normal loop
+        footerChar.addEventListener('animationend', function onResume() {
+          footerChar.removeEventListener('animationend', onResume);
+          if (!isIdle) startRun();
+        }, { once: true });
+      }
+    });
 
     // Strength card click toggle
     document.querySelectorAll('.strength-card').forEach(card => {
