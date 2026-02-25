@@ -616,6 +616,15 @@
       height: 50px;
     }
 
+    #footer-char {
+      position: absolute;
+      bottom: calc(100% - 50px);
+      left: 2rem;
+      height: 160px;
+      image-rendering: pixelated;
+      pointer-events: none;
+    }
+
     footer p {
       font-size: 0.45rem;
       color: var(--muted-color);
@@ -699,10 +708,9 @@
         <img src="peacee1.png" alt="Do Nang An" class="about-img" />
         <div class="about-text-block">
           <p>
-            Hello! I'm <strong style="color:var(--accent-color)">Do Nang An</strong>, a Unity Game Developer born in
-            2003.
-            I enjoy building games that feel great to play — from mechanics to visuals to performance.
-            Outside of code, I'm into music, cycling, and (of course) games.
+            Hello! I'm <strong style="color:var(--accent-color)">Do Nang An</strong>, a Unity Game Developer with one
+            year of experience. I enjoy creating games that bring joy to players, with smooth mechanics, polished
+            visuals, and optimized performance. Beyond work, I enjoy music, cycling, and exploring new games.
           </p>
           <p class="school-line">
             📚 Information Security (Software Security)<br>
@@ -716,9 +724,9 @@
         style="margin-top:1rem; display:flex; align-items:center; gap:1rem; border-top: 1px solid #333; padding-top:1rem;">
         <img src="animation.gif" alt="Animation showcase"
           style="height:80px; image-rendering:pixelated; border: 2px solid var(--accent-color);" />
-        <p style="font-family:var(--font-vt); font-size:1rem; color:var(--muted-color); line-height:1.6;">I want to be
-          part of products that I can genuinely contribute to — and see them succeed. There's nothing more satisfying
-          than watching something you helped build reach real players and make a positive impact on their experience.
+        <p style="font-family:var(--font-vt); font-size:1rem; color:var(--muted-color); line-height:1.6;">I am motivated
+          by contributing to impactful products and helping them succeed. Nothing is more rewarding than watching
+          something I helped build reach real players and enhance their experience.
         </p>
       </div>
     </div>
@@ -753,7 +761,7 @@
             </div>
             <div>
               <span class="label">📋 Description: </span>
-              A basic puzzle game where players solve challenges by sorting and arranging colorful boxes
+              A puzzle game where players solve challenges by sorting and arranging colorful boxes.
             </div>
           </div>
           <div class="metrics-row">
@@ -873,27 +881,28 @@
           <p>
             <strong style="color:var(--accent-color);">Full-cycle Unity Game Developer</strong><br><br>
             • Solely responsible for designing and implementing the entire game architecture and codebase<br>
-            • Developed core puzzle mechanics including grid system, color sorting logic and win-condition
+            • Developed core puzzle mechanics, including grid system design, color-sorting logic, and win-condition
             validation<br>
-            • Built UI system, game state machine, and scalable level management structure<br>
-            • Implemented Android build pipeline and independently published to Google Play<br>
-            • Optimized performance.
+            • Built the UI system, game state machine, and a scalable level management structure<br>
+            • Implemented the Android build pipeline and independently published the game on Google Play<br>
+            • Optimized performance through memory management improvements and runtime efficiency enhancements
           </p>
         </div>
 
         <div class="sig-item">
           <label>🏆 Proudest Metric / Outcome</label>
-          <p>Successfully solo-developed and published to Google Play in 3 weeks</p>
+          <p>Single-handedly developed and launched the game on Google Play in just 3 weeks</p>
         </div>
 
         <div class="sig-item">
           <label>📖 Lessons Learned</label>
           <p>
-            • Managing every aspect of a solo project builds strong prioritization and time management skills<br>
-            • Performance optimization (Object Pooling, draw calls) has a real, measurable impact on low-end Android
-            devices<br>
-            • The Android publishing pipeline has many hidden complexities — understanding it end-to-end is a valuable
-            skill
+            • Managing a solo project requires strong prioritization and disciplined time management to deliver on
+            schedule<br>
+            • Applying performance optimization techniques (Object Pooling, draw call reduction) to improve performance
+            on low-end Android devices<br>
+            • Understanding the Android publishing pipeline end-to-end is essential to avoid deployment issues and
+            ensure a smooth release process
           </p>
         </div>
 
@@ -921,8 +930,8 @@
         <div class="strength-card">
           <div class="s-icon"><i class="fas fa-bolt"></i></div>
           <h4>UNIQUE SKILL</h4>
-          <p>Basic game design ability in the puzzle genre — capable of crafting engaging level layouts, intuitive
-            mechanics, and balanced difficulty curves that keep players challenged without frustration</p>
+          <p>Working knowledge of puzzle game design, crafting engaging level layouts, intuitive mechanics, and
+            well-balanced difficulty curves</p>
         </div>
 
       </div>
@@ -1027,6 +1036,7 @@
 
   <!-- ══ FOOTER ══ -->
   <footer>
+    <img id="footer-char" src="animation1.gif" alt="character" />
     <p>© 2025 Do Nang An &nbsp;|&nbsp; Video BG: Silly Potato</p>
     <div class="volume-ctrl">
       <i class="fas fa-volume-down"></i>
