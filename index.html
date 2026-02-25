@@ -619,10 +619,33 @@
     #footer-char {
       position: absolute;
       bottom: calc(100% - 50px);
-      left: 2rem;
       height: 160px;
       image-rendering: pixelated;
       pointer-events: none;
+    }
+
+    @keyframes run-right {
+      from {
+        left: -180px;
+        transform: scaleX(1);
+      }
+
+      to {
+        left: 110vw;
+        transform: scaleX(1);
+      }
+    }
+
+    @keyframes run-left {
+      from {
+        left: 110vw;
+        transform: scaleX(-1);
+      }
+
+      to {
+        left: -180px;
+        transform: scaleX(-1);
+      }
     }
 
     footer p {
@@ -1036,7 +1059,7 @@
 
   <!-- ══ FOOTER ══ -->
   <footer>
-    <img id="footer-char" src="animation1.gif" alt="character" />
+    <img id="footer-char" src="animation3.gif" alt="character" />
     <p>© 2025 Do Nang An &nbsp;|&nbsp; Video BG: Silly Potato</p>
     <div class="volume-ctrl">
       <i class="fas fa-volume-down"></i>
@@ -1080,6 +1103,25 @@
         window.open(`https://www.google.com/search?q=${query}`, '_blank');
       });
     });
+
+    // Footer character running animation
+    const footerChar = document.getElementById('footer-char');
+    const RUN_DURATION = 8000; // ms to cross screen
+    let runningRight = true;
+
+    function startRun() {
+      footerChar.style.animation = 'none';
+      footerChar.offsetHeight; // reflow
+      if (runningRight) {
+        footerChar.style.animation = `run-right ${RUN_DURATION}ms linear`;
+      } else {
+        footerChar.style.animation = `run-left ${RUN_DURATION}ms linear`;
+      }
+      runningRight = !runningRight;
+    }
+
+    footerChar.addEventListener('animationend', startRun);
+    startRun(); // kick off
 
     // Strength card click toggle
     document.querySelectorAll('.strength-card').forEach(card => {
