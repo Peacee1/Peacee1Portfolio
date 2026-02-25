@@ -575,32 +575,32 @@ function combatMovementLoop(timestamp) {
     bossLeft -= (COMBAT_SPEED * 0.8) * dt;
     bossChar.style.left = bossLeft + 'px';
 
-    // Stop boss at a certain distance
-    const targetLeft = window.innerWidth - bossChar.offsetWidth;
+    // Target position: walk until it reaches 75% of the screen width from the left
+    const bossWidth = bossChar.offsetWidth || 350;
+    const targetLeft = window.innerWidth - bossWidth - 50;
+
     if (bossLeft <= targetLeft) {
+      console.info("Combat: Boss reached target position. Standing idle.");
       bossLeft = targetLeft;
       bossState = 'idle';
-      bossChar.src = 'boss_idle.gif';
+      bossChar.src = './boss_idle.gif';
       bossChar.style.left = bossLeft + 'px';
 
       // Display boss name logic
       const bossName = document.getElementById('boss-name');
       if (bossName) {
         bossName.style.display = 'block';
-        bossName.style.opacity = '1'; // ensure visible
-        bossName.textContent = ''; // Clear text for typing effect
+        bossName.style.opacity = '1';
+        bossName.textContent = '';
         const fullText = "Dark Wizard";
 
-        // Give browser 1 frame to apply display: block
         requestAnimationFrame(() => {
-          // Temporarily put text back to calculate natural layout width
           bossName.textContent = fullText;
           const finalWidth = bossName.offsetWidth;
-
-          const nameLeft = bossLeft + (bossChar.offsetWidth / 2) - (finalWidth / 2);
+          // Center name above boss, accounting for the flipped sprite
+          const nameLeft = bossLeft + (bossWidth / 2) - (finalWidth / 2) + 40;
           bossName.style.left = nameLeft + 'px';
-
-          bossName.textContent = ''; // Clear again
+          bossName.textContent = '';
 
           // Small delay before typing begins
           setTimeout(() => {
@@ -673,7 +673,7 @@ function combatMovementLoop(timestamp) {
 }
 
 function startBossAttack() {
-  bossChar.src = 'boss_attack.gif';
+  bossChar.src = './boss_attack.gif';
 
   // Spawn 5 projectiles after a short animation wind-up
   setTimeout(() => {
