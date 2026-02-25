@@ -22,6 +22,60 @@
       --font-vt: "VT323", monospace;
     }
 
+    [data-theme="light"] {
+      --primary-color: #f0efe8;
+      --secondary-color: #e2e0d5;
+      --accent-color: #b38600;
+      --accent2-color: #007ba8;
+      --text-color: #111;
+      --muted-color: #555;
+    }
+
+    [data-theme="light"] .bg-overlay {
+      background: rgba(240, 239, 232, 0.80);
+    }
+
+    [data-theme="light"] .section-box {
+      background: rgba(255, 255, 250, 0.92);
+    }
+
+    [data-theme="light"] .strength-card,
+    [data-theme="light"] .game-card,
+    [data-theme="light"] .sig-item {
+      background: #fff;
+      border-color: var(--accent-color);
+    }
+
+    [data-theme="light"] .strength-card.selected {
+      background: #fffbe6;
+    }
+
+    [data-theme="light"] .skill-tag {
+      background: #fff;
+    }
+
+    [data-theme="light"] nav {
+      background: var(--secondary-color);
+    }
+
+    /* Theme toggle button */
+    #theme-toggle {
+      background: none;
+      border: 2px solid var(--accent-color);
+      color: var(--accent-color);
+      font-family: var(--font-pixel);
+      font-size: 0.6rem;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    #theme-toggle:hover {
+      background: var(--accent-color);
+      color: var(--primary-color);
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -598,6 +652,7 @@
         <span class="tag">1 YEAR EXPERIENCE</span>
       </div>
     </div>
+    <button id="theme-toggle" title="Switch theme">☀️ LIGHT</button>
     <div style="font-size:0.5rem; color: var(--muted-color); text-align:right; padding-right: 0.8rem;">
       <a href="https://actvn.edu.vn/" target="_blank"
         style="color: var(--muted-color); text-decoration: none; border-bottom: 1px dashed var(--muted-color);">Academy
@@ -971,6 +1026,26 @@
     audio.volume = 0.5;
     slider.value = audio.volume;
     slider.addEventListener('input', () => { audio.volume = slider.value; });
+
+    // Theme toggle
+    const toggleBtn = document.getElementById('theme-toggle');
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      toggleBtn.textContent = '🌙 DARK';
+    }
+    toggleBtn.addEventListener('click', () => {
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      if (isLight) {
+        document.documentElement.removeAttribute('data-theme');
+        toggleBtn.textContent = '☀️ LIGHT';
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        toggleBtn.textContent = '🌙 DARK';
+        localStorage.setItem('theme', 'light');
+      }
+    });
 
     // Skill tag → Google search on click
     document.querySelectorAll('.skill-tag').forEach(tag => {
