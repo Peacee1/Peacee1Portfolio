@@ -67,10 +67,11 @@ let savedFacingLeft = false;
 let isLocked = false;
 let isQuoteShowing = false;    // true while running quote bubble is visible
 let idleAutoDismissTimer = null;
+let isCombatMode = false;
 
 function toggleChar(e) {
   e.preventDefault();
-  if (isLocked) return;
+  if (isLocked || isCombatMode) return;
   isIdle = !isIdle;
   if (isIdle) {
     // Freeze at current position
@@ -192,6 +193,36 @@ document.getElementById('btn-yes').addEventListener('click', (e) => {
           }).onfinish = () => { el.style.visibility = 'hidden'; };
         }, i * 90);
       });
+
+      // After all sections are done falling, rise the footer to half screen
+      const lastDelay = sections.length * 90 + 1400;
+      setTimeout(() => {
+        const footer = document.querySelector('footer');
+        const halfH = Math.round(window.innerHeight / 2);
+        footer.animate([
+          { bottom: '0px', height: '50px' },
+          { bottom: '0px', height: halfH + 'px' },
+        ], { duration: 800, easing: 'cubic-bezier(0.22,1,0.36,1)', fill: 'forwards' });
+
+        // After footer finishes rising, character enters Combat Mode
+        setTimeout(() => {
+          isCombatMode = true;
+
+          footerChar.style.animation = 'none'; // freeze original animation
+          const charRect = footerChar.getBoundingClientRect();
+          footerChar.style.left = charRect.left + 'px';
+          footerChar.src = 'animation1.gif'; // idle
+
+          bubbleText.innerHTML = 'Use A and D to move! 🎮';
+          document.getElementById('bubble-btns').style.display = 'none';
+          charBubble.style.left = charRect.left + 'px';
+          charBubble.classList.add('visible');
+
+          // start combat movement loop
+          lastCombatTime = 0;
+          requestAnimationFrame(combatMovementLoop);
+        }, 900);
+      }, lastDelay);
     }, 800);
   }, 4000);
 });
@@ -319,3 +350,103 @@ document.querySelectorAll('nav a').forEach(link => {
     }
   });
 });
+
+// --- Combat Mode Movement ---
+const combatKeys = { a: false, d: false };
+const COMBAT_SPEED = 300; // px/s
+let combatRAF = null;
+let lastCombatTime = 0;
+let hasPressedMovementKeys = false;
+let isAttacking = false;
+let lastAttackTime = 0;
+
+window.addEventListener('click', (e) => {
+  if (!isCombatMode) return;
+  if (e.target.tagName.toLowerCase() === 'button') return; // ignore UI buttons if any exist
+
+  // Can't attack if cooldown hasn't finished (700ms)
+  if (performance.now() - lastAttackTime < 700) return;
+
+  // Can't attack while moving (holding A or D)
+  if (combatKeys.a || combatKeys.d) return;
+
+  if (isAttacking) return;
+  isAttacking = true;
+  lastAttackTime = performance.now();
+  footerChar.src = 'animation4.gif';
+
+  // Animation duration is ~400ms, assume 500ms for safety
+  setTimeout(() => {
+    isAttacking = false;
+  }, 500);
+});
+
+window.addEventListener('keydown', (e) => {
+  if (!isCombatMode) return;
+  const k = e.key.toLowerCase();
+  if (k === 'a') combatKeys.a = true;
+  if (k === 'd') combatKeys.d = true;
+});
+
+window.addEventListener('keyup', (e) => {
+  if (!isCombatMode) return;
+  const k = e.key.toLowerCase();
+  if (k === 'a') combatKeys.a = false;
+  if (k === 'd') combatKeys.d = false;
+});
+
+function combatMovementLoop(timestamp) {
+  if (!isCombatMode) return;
+  if (!lastCombatTime) lastCombatTime = timestamp;
+  const dt = (timestamp - lastCombatTime) / 1000;
+  lastCombatTime = timestamp;
+
+  let moved = false;
+  let currentLeft = parseFloat(footerChar.style.left);
+  if (isNaN(currentLeft)) {
+    currentLeft = footerChar.getBoundingClientRect().left;
+  }
+
+  if (combatKeys.a && !combatKeys.d) {
+    currentLeft -= COMBAT_SPEED * dt;
+    footerChar.style.transform = 'scaleX(-1)';
+    moved = true;
+  } else if (combatKeys.d && !combatKeys.a) {
+    currentLeft += COMBAT_SPEED * dt;
+    footerChar.style.transform = 'scaleX(1)';
+    moved = true;
+  }
+
+  if (moved && !hasPressedMovementKeys) {
+    hasPressedMovementKeys = true;
+    setTimeout(() => {
+      if (isCombatMode) {
+        bubbleText.innerHTML = 'Left click to attack! ⚔️';
+        charBubble.classList.add('visible');
+      }
+    }, 5000);
+  }
+
+  // keep within screen bounds
+  const minLeft = 0;
+  const maxLeft = window.innerWidth - footerChar.offsetWidth;
+  currentLeft = Math.max(minLeft, Math.min(maxLeft, currentLeft));
+
+  footerChar.style.left = currentLeft + 'px';
+  // keep bubble attached
+  if (charBubble.classList.contains('visible')) {
+    charBubble.style.left = currentLeft + 'px';
+  }
+
+  // swap Sprite based on movement (run vs idle)
+  if (!isAttacking) {
+    const isCurrentlyIdle = footerChar.src.includes('animation1.gif');
+    if (moved && isCurrentlyIdle) {
+      footerChar.src = 'animation3.gif';
+    } else if (!moved && !isCurrentlyIdle) {
+      footerChar.src = 'animation1.gif';
+    }
+  }
+
+  combatRAF = requestAnimationFrame(combatMovementLoop);
+}
