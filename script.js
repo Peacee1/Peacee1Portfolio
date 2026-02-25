@@ -533,9 +533,15 @@ function combatMovementLoop(timestamp) {
         // 5 seconds after showing instruction, spawn the boss
         setTimeout(() => {
           if (isCombatMode) {
-            // Teleport player to the left edge
+            // Teleport player to the left edge and reset state
             currentLeft = 20;
             footerChar.style.left = currentLeft + 'px';
+            footerChar.src = 'animation1.gif';
+            footerChar.style.transform = 'scaleX(1)';
+            isBlocking = false;
+            isAttacking = false;
+            combatKeys.a = false;
+            combatKeys.d = false;
 
             // Spawn Boss from the right edge
             isCinematic = true;
