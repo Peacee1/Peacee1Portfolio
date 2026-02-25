@@ -7,17 +7,21 @@ slider.addEventListener('input', () => { audio.volume = slider.value; });
 // Check for death reboot cinematic (handled initially by head script + CSS)
 const deathOverlay = document.getElementById('death-overlay');
 if (localStorage.getItem('death_reboot') === 'true') {
-  // Ensure the overlay is ready to transition out
+  // Ensure the overlay is ready and stays black while we prep the transition
   deathOverlay.style.visibility = 'visible';
+  deathOverlay.classList.add('blackout');
 
   window.addEventListener('load', () => {
     // Wait a brief moment after load for smoothness
     setTimeout(() => {
-      // Remove the blocking class to trigger the CSS transition to open (150%)
+      // Remove the blocking class that was forcing the black screen in the head
       document.documentElement.classList.remove('is-rebooting');
       localStorage.removeItem('death_reboot');
 
-      // Fully hide after the 2s transition
+      // Now trigger the transition to open by removing the blackout class
+      deathOverlay.classList.remove('blackout');
+
+      // Fully hide after the 2s transition completes
       setTimeout(() => {
         deathOverlay.style.visibility = 'hidden';
       }, 2100);
@@ -715,7 +719,7 @@ function triggerDeath() {
   const overlay = document.getElementById('death-overlay');
   overlay.style.visibility = 'visible';
   requestAnimationFrame(() => {
-    overlay.classList.add('active');
+    overlay.classList.add('blackout');
   });
 
   // Reload after cinematic ends

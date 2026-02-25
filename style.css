@@ -693,19 +693,21 @@ footer {
   background: #000;
   z-index: 9999;
   visibility: hidden;
-  clip-path: circle(150% at 50% 50%);
+  clip-path: circle(0% at 50% 50%);
+  /* Base state: Open (tiny dot) */
   transition: clip-path 2s ease-in-out;
 }
 
-#death-overlay.active {
+#death-overlay.blackout {
   visibility: visible;
-  clip-path: circle(0% at 50% 50%);
+  clip-path: circle(150% at 50% 50%);
+  /* Active state: Closed (fills screen) */
 }
 
 /* Force black screen immediately if rebooting from death */
 html.is-rebooting #death-overlay {
   visibility: visible !important;
-  clip-path: circle(0% at 50% 50%) !important;
+  clip-path: circle(150% at 50% 50%) !important;
   transition: none !important;
 }
 
