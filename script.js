@@ -186,7 +186,7 @@ let quoteTimer = null;
 
 function scheduleNextQuote() {
   clearTimeout(quoteTimer);
-  const delay = 3600;
+  const delay = 5000;
   quoteTimer = setTimeout(() => {
     if (!isIdle) showRunningQuote();
   }, delay);
