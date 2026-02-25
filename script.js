@@ -525,14 +525,17 @@ function combatMovementLoop(timestamp) {
 
   if (moved && !hasPressedMovementKeys) {
     hasPressedMovementKeys = true;
+    console.info("Combat: First movement detected. Boss timer starting...");
     setTimeout(() => {
       if (isCombatMode) {
+        console.info("Combat: Showing instructions.");
         bubbleText.innerHTML = 'Left click to attack! ⚔️<br>Space for block 🛡️';
         charBubble.classList.add('visible');
 
-        // 5 seconds after showing instruction, spawn the boss
+        // 2 seconds after showing instruction, spawn the boss (Shortened)
         setTimeout(() => {
           if (isCombatMode) {
+            console.info("Combat: Spawning Boss!");
             // Teleport player to the left edge and reset state
             currentLeft = 20;
             footerChar.style.left = currentLeft + 'px';
@@ -548,16 +551,17 @@ function combatMovementLoop(timestamp) {
             isBossActive = true;
             bossState = 'running_in';
             bossChar.style.display = 'block';
+            bossChar.style.zIndex = '300';
             bossLeft = window.innerWidth;
             bossChar.style.left = bossLeft + 'px';
-            bossChar.src = 'boss_run.gif';
+            bossChar.src = './boss_run.gif'; // Explicit relative path
 
             // Hide player bubble to focus on boss
             charBubble.classList.remove('visible');
           }
-        }, 5000);
+        }, 2000);
       }
-    }, 5000);
+    }, 2000);
   }
 
   // keep within screen bounds
@@ -573,8 +577,8 @@ function combatMovementLoop(timestamp) {
 
   // Boss logic
   if (isBossActive && bossState === 'running_in') {
-    // Boss walks left
-    bossLeft -= (COMBAT_SPEED * 0.4) * dt;
+    // Boss walks left - Increased speed (0.8x player speed)
+    bossLeft -= (COMBAT_SPEED * 0.8) * dt;
     bossChar.style.left = bossLeft + 'px';
 
     // Stop boss at a certain distance
