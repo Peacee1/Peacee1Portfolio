@@ -65,6 +65,8 @@ let isIdle = false;
 let savedLeft = null;
 let savedFacingLeft = false;
 let isLocked = false;
+let isQuoteShowing = false;    // true while running quote bubble is visible
+let idleAutoDismissTimer = null;
 
 function toggleChar(e) {
   e.preventDefault();
@@ -78,11 +80,24 @@ function toggleChar(e) {
     footerChar.style.left = savedLeft + 'px';
     footerChar.style.transform = savedFacingLeft ? 'scaleX(-1)' : 'scaleX(1)';
     footerChar.src = 'animation1.gif';
-    // Show bubble at character position (reset text first)
-    bubbleText.innerHTML = "Hey! What's going on? I'm on a mission —<br>wanna join? ⚔️";
-    document.getElementById('bubble-btns').style.display = 'flex';
-    charBubble.style.left = savedLeft + 'px';
-    charBubble.classList.add('visible');
+
+    if (isQuoteShowing) {
+      // Interrupted a running quote — show Yes/No
+      stopBubbleTracking();
+      isQuoteShowing = false;
+      clearTimeout(quoteDismissTimer);
+      clearTimeout(quoteTimer);
+      bubbleText.innerHTML = "Hey! What's going on? I'm on a mission —<br>wanna join? ⚔️";
+      document.getElementById('bubble-btns').style.display = 'flex';
+      charBubble.style.left = savedLeft + 'px';
+      charBubble.classList.add('visible');
+    } else {
+      // Normal idle — show Yes/No bubble
+      bubbleText.innerHTML = "Hey! What's going on? I'm on a mission —<br>wanna join? ⚔️";
+      document.getElementById('bubble-btns').style.display = 'flex';
+      charBubble.style.left = savedLeft + 'px';
+      charBubble.classList.add('visible');
+    }
   } else {
     // Show "bored" message briefly then resume
     bubbleText.innerHTML = 'Ugh, you bore me. 😒<br>Stop bothering me!';
@@ -133,19 +148,57 @@ footerChar.addEventListener('touchstart', toggleChar, { passive: false });
 // Yes / No button handlers
 document.getElementById('btn-yes').addEventListener('click', (e) => {
   e.stopPropagation();
-  bubbleText.innerHTML = "Awesome! Let's go! 🔥<br>...just kidding, I'm a GIF 😅";
+  clearTimeout(idleAutoDismissTimer);
   document.getElementById('bubble-btns').style.display = 'none';
+  isLocked = true; // lock all clicks during countdown
+
+  // Countdown 1 → 2 → 3
+  bubbleText.innerHTML = '1...';
+  setTimeout(() => { bubbleText.innerHTML = '2...'; }, 2000);
   setTimeout(() => {
-    charBubble.classList.remove('visible');
-    isIdle = false;
-    footerChar.src = 'animation3.gif';
-    startRun();
-    scheduleNextQuote();
-  }, 2000);
+    bubbleText.innerHTML = '3!! 💥';
+
+    // After a brief pause trigger the fall
+    setTimeout(() => {
+      charBubble.classList.remove('visible');
+
+      // Stagger-fall every section-box with random physics
+      const sections = document.querySelectorAll('.section-box');
+      sections.forEach((el, i) => {
+        const rect = el.getBoundingClientRect();
+
+        setTimeout(() => {
+          el.style.position = 'fixed';
+          el.style.top = rect.top + 'px';
+          el.style.left = rect.left + 'px';
+          el.style.width = rect.width + 'px';
+          el.style.margin = '0';
+          el.style.zIndex = '90'; // below footer (z-index 100)
+
+          const dir = Math.random() < 0.5 ? 1 : -1;
+          const driftX = (20 + Math.random() * 60) * dir;   // horizontal drift
+          const rotMid = (5 + Math.random() * 10) * dir;
+          const rotEnd = (15 + Math.random() * 25) * dir;
+          const fallDist = window.innerHeight - rect.top + 80;
+
+          el.animate([
+            { transform: 'translate(0,0) rotate(0deg)', opacity: 1, offset: 0 },
+            { transform: `translate(${driftX * 0.4}px,${fallDist * 0.3}px) rotate(${rotMid}deg)`, opacity: 0.9, offset: 0.35 },
+            { transform: `translate(${driftX}px,${fallDist}px) rotate(${rotEnd}deg)`, opacity: 0, offset: 1 },
+          ], {
+            duration: 1000 + Math.random() * 400 + i * 60,
+            easing: 'cubic-bezier(0.55, 0, 1, 0.45)',
+            fill: 'forwards'
+          }).onfinish = () => { el.style.visibility = 'hidden'; };
+        }, i * 90);
+      });
+    }, 800);
+  }, 4000);
 });
 
 document.getElementById('btn-no').addEventListener('click', (e) => {
   e.stopPropagation();
+  clearTimeout(idleAutoDismissTimer);
   bubbleText.innerHTML = 'Ugh, you bore me. 😒<br>Stop bothering me!';
   document.getElementById('bubble-btns').style.display = 'none';
   isLocked = true;
@@ -183,6 +236,7 @@ function getRunningQuotes() {
 }
 
 let quoteTimer = null;
+let quoteDismissTimer = null;
 
 function scheduleNextQuote() {
   clearTimeout(quoteTimer);
@@ -214,9 +268,11 @@ function showRunningQuote() {
   bubbleText.innerHTML = quote;
   document.getElementById('bubble-btns').style.display = 'none';
   charBubble.classList.add('visible');
-  trackBubbleToChar(); // start following character
+  isQuoteShowing = true;
+  trackBubbleToChar();
 
-  setTimeout(() => {
+  quoteDismissTimer = setTimeout(() => {
+    isQuoteShowing = false;
     charBubble.classList.remove('visible');
     stopBubbleTracking();
     if (!isIdle) scheduleNextQuote();
@@ -225,6 +281,17 @@ function showRunningQuote() {
 
 // Kick off the first quote after 6s
 quoteTimer = setTimeout(() => { if (!isIdle) showRunningQuote(); }, 3600);
+
+// Click bubble to dismiss running quote and reset timer
+charBubble.addEventListener('click', (e) => {
+  if (!isQuoteShowing) return; // only handle running quotes
+  e.stopPropagation();
+  isQuoteShowing = false;
+  charBubble.classList.remove('visible');
+  stopBubbleTracking();
+  clearTimeout(quoteTimer);
+  scheduleNextQuote(); // reset timer for next quote
+});
 
 // Strength card click toggle
 document.querySelectorAll('.strength-card').forEach(card => {

@@ -690,6 +690,28 @@ footer {
   border-color: #d14;
 }
 
+@keyframes fall-out {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+
+  40% {
+    transform: translateY(var(--fall-mid)) rotate(var(--fall-rot-mid));
+    opacity: 0.85;
+  }
+
+  100% {
+    transform: translateY(var(--fall-dist)) rotate(var(--fall-rot));
+    opacity: 0;
+  }
+}
+
+.section-falling {
+  animation: fall-out 1.4s ease-in forwards;
+  pointer-events: none;
+}
+
 @keyframes run-right {
   from {
     left: -180px;
