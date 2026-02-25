@@ -845,19 +845,6 @@ footer p {
   color: var(--muted-color);
 }
 
-.volume-ctrl {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8rem;
-  color: var(--muted-color);
-}
-
-#volume-slider {
-  width: 80px;
-  accent-color: var(--accent-color);
-}
-
 /* ─── ANIMATION GIF ─── */
 .anim-showcase {
   display: block;

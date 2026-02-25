@@ -1,9 +1,3 @@
-const audio = document.getElementById('bg-music');
-const slider = document.getElementById('volume-slider');
-audio.volume = 0.5;
-slider.value = audio.volume;
-slider.addEventListener('input', () => { audio.volume = slider.value; });
-
 // Check for death reboot cinematic (handled initially by head script + CSS)
 const deathOverlay = document.getElementById('death-overlay');
 if (localStorage.getItem('death_reboot') === 'true') {
