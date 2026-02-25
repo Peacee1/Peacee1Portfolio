@@ -473,7 +473,7 @@ function combatMovementLoop(timestamp) {
   }
 
   // swap Sprite based on movement (run vs idle)
-  if (!isAttacking) {
+  if (!isAttacking && !isBlocking) {
     const isCurrentlyIdle = footerChar.src.includes('animation1.gif');
     if (moved && isCurrentlyIdle) {
       footerChar.src = 'animation3.gif';
