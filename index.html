@@ -11,6 +11,11 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <script>
+    if (localStorage.getItem('death_reboot') === 'true') {
+      document.documentElement.classList.add('is-rebooting');
+    }
+  </script>
 </head>
 
 <body>
@@ -397,6 +402,9 @@
   <!-- ══ FOOTER ══ -->
   <footer>
     <img id="footer-char" src="animation3.gif" alt="character" />
+    <img id="boss-char" src="boss_idle.gif" alt="boss" />
+    <div id="boss-name">Dark Wizard</div>
+    <div id="boss-bubble"></div>
     <div id="char-bubble">
       <span id="bubble-text">Hey! What's going on? I'm on a mission —<br>wanna join? ⚔️</span>
       <div id="bubble-btns">
@@ -412,6 +420,7 @@
     </div>
   </footer>
 
+  <div id="death-overlay"></div>
   <script src="script.js"></script>
 </body>
 

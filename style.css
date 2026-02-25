@@ -611,6 +611,108 @@ footer {
   cursor: pointer;
 }
 
+#boss-char {
+  position: absolute;
+  bottom: calc(100% - 155px);
+  height: 480px;
+  /* Boss is 3x the player height */
+  image-rendering: pixelated;
+  display: none;
+  transform: scaleX(-1);
+  /* Boss faces left by default */
+  pointer-events: none;
+}
+
+#boss-name {
+  position: absolute;
+  bottom: calc(100% + 100px);
+  /* Lowered even more to sit right on top of the hood */
+  right: -200px;
+  /* Initially offscreen or we update it dynamically in JS */
+  color: #ff3333;
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+  pointer-events: none;
+  z-index: 300;
+  display: none;
+}
+
+#boss-bubble {
+  position: absolute;
+  bottom: calc(100% + 250px);
+  right: 15vw;
+  /* Positioned near boss */
+  background: #330000;
+  border: 2px solid #ff3333;
+  color: #ffaaaa;
+  font-family: var(--font-vt);
+  font-size: 1.2rem;
+  padding: 0.6rem 1rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 200;
+  display: none;
+}
+
+#boss-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  right: 20px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid #330000;
+}
+
+.boss-projectile {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background-image: url('profile-pixel.jpg');
+  background-size: cover;
+  border: 2px solid #ff3333;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 250;
+  image-rendering: pixelated;
+  box-shadow: 0 0 10px #ff3333;
+}
+
+#death-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  z-index: 9999;
+  visibility: hidden;
+  clip-path: circle(150% at 50% 50%);
+  transition: clip-path 2s ease-in-out;
+}
+
+#death-overlay.active {
+  visibility: visible;
+  clip-path: circle(0% at 50% 50%);
+}
+
+/* Force black screen immediately if rebooting from death */
+html.is-rebooting #death-overlay {
+  visibility: visible !important;
+  clip-path: circle(0% at 50% 50%) !important;
+  transition: none !important;
+}
+
+#death-overlay.no-transition {
+  transition: none !important;
+}
+
 #char-bubble {
   position: absolute;
   bottom: calc(100% + 120px);

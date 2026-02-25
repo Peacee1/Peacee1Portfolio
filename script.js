@@ -4,6 +4,27 @@ audio.volume = 0.5;
 slider.value = audio.volume;
 slider.addEventListener('input', () => { audio.volume = slider.value; });
 
+// Check for death reboot cinematic (handled initially by head script + CSS)
+const deathOverlay = document.getElementById('death-overlay');
+if (localStorage.getItem('death_reboot') === 'true') {
+  // Ensure the overlay is ready to transition out
+  deathOverlay.style.visibility = 'visible';
+
+  window.addEventListener('load', () => {
+    // Wait a brief moment after load for smoothness
+    setTimeout(() => {
+      // Remove the blocking class to trigger the CSS transition to open (150%)
+      document.documentElement.classList.remove('is-rebooting');
+      localStorage.removeItem('death_reboot');
+
+      // Fully hide after the 2s transition
+      setTimeout(() => {
+        deathOverlay.style.visibility = 'hidden';
+      }, 2100);
+    }, 500);
+  });
+}
+
 // Theme toggle
 const toggleBtn = document.getElementById('theme-toggle');
 const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -35,10 +56,19 @@ document.querySelectorAll('.skill-tag').forEach(tag => {
 
 // Footer character running animation
 const footerChar = document.getElementById('footer-char');
+const bossChar = document.getElementById('boss-char');
 const charBubble = document.getElementById('char-bubble');
 const bubbleText = document.getElementById('bubble-text');
 const SPEED_PX_S = 100; // pixels per second
 let runningRight = true;
+
+// Boss state variables
+let isBossActive = false;
+let bossState = 'hidden'; // 'hidden', 'running_in', 'idle'
+let bossLeft = 0;
+let isCinematic = false; // blocks all player input
+let projectiles = [];
+let isDead = false;
 
 function calcDuration(distancePx) {
   return Math.round(distancePx / SPEED_PX_S * 1000); // ms
@@ -363,7 +393,7 @@ let isBlocking = false;
 let lastBlockTime = 0;
 
 window.addEventListener('click', (e) => {
-  if (!isCombatMode) return;
+  if (!isCombatMode || isCinematic) return;
   if (e.target.tagName.toLowerCase() === 'button') return; // ignore UI buttons if any exist
 
   // Can't attack if blocking
@@ -393,7 +423,7 @@ window.addEventListener('click', (e) => {
 });
 
 window.addEventListener('keydown', (e) => {
-  if (!isCombatMode) return;
+  if (!isCombatMode || isCinematic) return;
   const k = e.key.toLowerCase();
   if (k === 'a') combatKeys.a = true;
   if (k === 'd') combatKeys.d = true;
@@ -412,7 +442,7 @@ window.addEventListener('keydown', (e) => {
 });
 
 window.addEventListener('keyup', (e) => {
-  if (!isCombatMode) return;
+  if (!isCombatMode || isCinematic) return;
   const k = e.key.toLowerCase();
   if (k === 'a') combatKeys.a = false;
   if (k === 'd') combatKeys.d = false;
@@ -438,8 +468,8 @@ function combatMovementLoop(timestamp) {
     currentLeft = footerChar.getBoundingClientRect().left;
   }
 
-  // Prevent moving while swinging the sword or blocking
-  if (!isAttacking && !isBlocking) {
+  // Prevent moving while swinging the sword, blocking, or during cinematic
+  if (!isAttacking && !isBlocking && !isCinematic) {
     if (combatKeys.a && !combatKeys.d) {
       currentLeft -= COMBAT_SPEED * dt;
       footerChar.style.transform = 'scaleX(-1)';
@@ -451,12 +481,71 @@ function combatMovementLoop(timestamp) {
     }
   }
 
+  // Projectile logic
+  if (isCombatMode && !isDead) {
+    projectiles.forEach((p, index) => {
+      // Homing logic: move towards player center
+      const charRect = footerChar.getBoundingClientRect();
+      const pRect = p.el.getBoundingClientRect();
+      const targetX = charRect.left + charRect.width / 2;
+      const targetY = charRect.top + charRect.height / 2;
+      const currentX = p.x;
+      const currentY = p.y;
+
+      const dx = targetX - currentX;
+      const dy = targetY - currentY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist > 5) {
+        p.vx = (dx / dist) * COMBAT_SPEED * 1.2;
+        p.vy = (dy / dist) * COMBAT_SPEED * 1.2;
+      }
+
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+
+      // Rotate based on movement or just spin
+      p.rotation += 360 * dt;
+
+      p.el.style.left = p.x + 'px';
+      p.el.style.top = p.y + 'px';
+      p.el.style.transform = `rotate(${p.rotation}deg)`;
+
+      // Collision detection
+      const hitDist = 30; // proximity for hit
+      if (dist < hitDist) {
+        triggerDeath();
+      }
+    });
+  }
+
   if (moved && !hasPressedMovementKeys) {
     hasPressedMovementKeys = true;
     setTimeout(() => {
       if (isCombatMode) {
         bubbleText.innerHTML = 'Left click to attack! ⚔️<br>Space for block 🛡️';
         charBubble.classList.add('visible');
+
+        // 5 seconds after showing instruction, spawn the boss
+        setTimeout(() => {
+          if (isCombatMode) {
+            // Teleport player to the left edge
+            currentLeft = 20;
+            footerChar.style.left = currentLeft + 'px';
+
+            // Spawn Boss from the right edge
+            isCinematic = true;
+            isBossActive = true;
+            bossState = 'running_in';
+            bossChar.style.display = 'block';
+            bossLeft = window.innerWidth;
+            bossChar.style.left = bossLeft + 'px';
+            bossChar.src = 'boss_run.gif';
+
+            // Hide player bubble to focus on boss
+            charBubble.classList.remove('visible');
+          }
+        }, 5000);
       }
     }, 5000);
   }
@@ -472,8 +561,98 @@ function combatMovementLoop(timestamp) {
     charBubble.style.left = currentLeft + 'px';
   }
 
+  // Boss logic
+  if (isBossActive && bossState === 'running_in') {
+    // Boss walks left
+    bossLeft -= (COMBAT_SPEED * 0.4) * dt;
+    bossChar.style.left = bossLeft + 'px';
+
+    // Stop boss at a certain distance
+    const targetLeft = window.innerWidth - bossChar.offsetWidth;
+    if (bossLeft <= targetLeft) {
+      bossLeft = targetLeft;
+      bossState = 'idle';
+      bossChar.src = 'boss_idle.gif';
+      bossChar.style.left = bossLeft + 'px';
+
+      // Display boss name logic
+      const bossName = document.getElementById('boss-name');
+      if (bossName) {
+        bossName.style.display = 'block';
+        bossName.style.opacity = '1'; // ensure visible
+        bossName.textContent = ''; // Clear text for typing effect
+        const fullText = "Dark Wizard";
+
+        // Give browser 1 frame to apply display: block
+        requestAnimationFrame(() => {
+          // Temporarily put text back to calculate natural layout width
+          bossName.textContent = fullText;
+          const finalWidth = bossName.offsetWidth;
+
+          const nameLeft = bossLeft + (bossChar.offsetWidth / 2) - (finalWidth / 2);
+          bossName.style.left = nameLeft + 'px';
+
+          bossName.textContent = ''; // Clear again
+
+          // Small delay before typing begins
+          setTimeout(() => {
+            let i = 0;
+            const typeInterval = setInterval(() => {
+              bossName.textContent += fullText[i];
+              i++;
+              if (i >= fullText.length) {
+                clearInterval(typeInterval);
+
+                // Now start typing boss dialogue
+                const bossBubble = document.getElementById('boss-bubble');
+                if (bossBubble) {
+                  bossBubble.style.display = 'block';
+
+                  requestAnimationFrame(() => {
+                    bossBubble.style.opacity = '1';
+                    bossBubble.style.transform = 'translateY(0)';
+
+                    const dialogueText = "You can't defeat me unless you hire this dev!";
+                    bossBubble.textContent = '';
+
+                    // Position bubble's right edge relatively close to the right edge of the boss image 
+                    // (since the image is flipped and the head is near the right edge)
+                    bossBubble.style.right = (bossChar.offsetWidth * 0.25) + 'px';
+
+                    setTimeout(() => {
+                      let j = 0;
+                      const talkInterval = setInterval(() => {
+                        bossBubble.textContent += dialogueText[j];
+                        j++;
+                        if (j >= dialogueText.length) {
+                          clearInterval(talkInterval);
+                          isCinematic = false; // Release input lock after the speech is fully typed
+
+                          // Hide bubble after 4 seconds
+                          setTimeout(() => {
+                            bossBubble.style.opacity = '0';
+                            setTimeout(() => { bossBubble.style.display = 'none'; }, 300);
+
+                            // Immediately start Boss Attack Sequence
+                            startBossAttack();
+                          }, 1000);
+                        }
+                      }, 50); // fast typing for speech
+                    }, 500); // Wait 0.5s after name finished typing
+                  });
+                } else {
+                  isCinematic = false;
+                }
+              }
+            }, 100); // 100ms per character
+          }, 300);
+        });
+      }
+    }
+  }
+
   // swap Sprite based on movement (run vs idle)
-  if (!isAttacking && !isBlocking) {
+  if (!isAttacking && !isBlocking && !isDead) {
     const isCurrentlyIdle = footerChar.src.includes('animation1.gif');
     if (moved && isCurrentlyIdle) {
       footerChar.src = 'animation3.gif';
@@ -483,4 +662,64 @@ function combatMovementLoop(timestamp) {
   }
 
   combatRAF = requestAnimationFrame(combatMovementLoop);
+}
+
+function startBossAttack() {
+  bossChar.src = 'boss_attack.gif';
+
+  // Spawn 5 projectiles after a short animation wind-up
+  setTimeout(() => {
+    const bRect = bossChar.getBoundingClientRect();
+    const spawnX = bRect.left + bRect.width / 2;
+    const spawnY = bRect.top + 50; // top of boss
+
+    for (let i = 0; i < 5; i++) {
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'boss-projectile';
+        document.body.appendChild(el);
+
+        const p = {
+          el: el,
+          x: spawnX,
+          y: spawnY,
+          vx: (Math.random() - 0.5) * 100,
+          vy: (Math.random() - 0.5) * 100,
+          rotation: 0
+        };
+        projectiles.push(p);
+      }, i * 300); // staggered spawn
+    }
+  }, 800);
+
+  // Return to idle after animation finishes (approx 2s)
+  setTimeout(() => {
+    if (!isDead) {
+      bossChar.src = 'boss_idle.gif';
+    }
+  }, 2000);
+}
+
+function triggerDeath() {
+  if (isDead) return;
+  isDead = true;
+  isCinematic = true; // Final lock
+
+  // Set flag for persistent death screen on reload
+  localStorage.setItem('death_reboot', 'true');
+
+  // Player death visuals (stop animation)
+  footerChar.src = 'animation1.gif';
+  footerChar.style.filter = 'grayscale(1) brightness(0.5) blur(1px)';
+
+  const overlay = document.getElementById('death-overlay');
+  overlay.style.visibility = 'visible';
+  requestAnimationFrame(() => {
+    overlay.classList.add('active');
+  });
+
+  // Reload after cinematic ends
+  setTimeout(() => {
+    window.location.reload();
+  }, 2500);
 }
