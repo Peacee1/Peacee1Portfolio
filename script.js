@@ -359,10 +359,15 @@ let lastCombatTime = 0;
 let hasPressedMovementKeys = false;
 let isAttacking = false;
 let lastAttackTime = 0;
+let isBlocking = false;
+let lastBlockTime = 0;
 
 window.addEventListener('click', (e) => {
   if (!isCombatMode) return;
   if (e.target.tagName.toLowerCase() === 'button') return; // ignore UI buttons if any exist
+
+  // Can't attack if blocking
+  if (isBlocking) return;
 
   // Can't attack if cooldown hasn't finished (700ms)
   if (performance.now() - lastAttackTime < 700) return;
@@ -373,12 +378,18 @@ window.addEventListener('click', (e) => {
   if (isAttacking) return;
   isAttacking = true;
   lastAttackTime = performance.now();
-  footerChar.src = 'animation4.gif';
+  // Bypass browser cache to restart the GIF animation from frame 0
+  footerChar.src = 'animation4.gif?t=' + lastAttackTime;
 
-  // Animation duration is ~400ms, assume 500ms for safety
+  // Animation duration is exactly 400ms. Revert sprite to idle so it won't loop twice.
+  setTimeout(() => {
+    if (isCombatMode) footerChar.src = 'animation1.gif';
+  }, 400);
+
+  // Locking for 700ms cooldown (movement and next attack)
   setTimeout(() => {
     isAttacking = false;
-  }, 500);
+  }, 700);
 });
 
 window.addEventListener('keydown', (e) => {
@@ -386,6 +397,18 @@ window.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
   if (k === 'a') combatKeys.a = true;
   if (k === 'd') combatKeys.d = true;
+
+  if (e.key === ' ' && !isAttacking && !isBlocking) {
+    // If pressing space while moving, it overrides and stops movement
+    e.preventDefault();
+
+    isBlocking = true;
+    lastBlockTime = performance.now();
+
+    // Play block animation. It will loop or stay, depending on GIF.
+    // We assume we leave it playing while space is held.
+    footerChar.src = 'animation5.gif?t=' + lastBlockTime;
+  }
 });
 
 window.addEventListener('keyup', (e) => {
@@ -393,6 +416,14 @@ window.addEventListener('keyup', (e) => {
   const k = e.key.toLowerCase();
   if (k === 'a') combatKeys.a = false;
   if (k === 'd') combatKeys.d = false;
+
+  if (e.key === ' ') {
+    isBlocking = false;
+    // Immediately return to idle if not moving
+    if (footerChar.src.includes('animation5.gif')) {
+      footerChar.src = 'animation1.gif';
+    }
+  }
 });
 
 function combatMovementLoop(timestamp) {
@@ -407,21 +438,24 @@ function combatMovementLoop(timestamp) {
     currentLeft = footerChar.getBoundingClientRect().left;
   }
 
-  if (combatKeys.a && !combatKeys.d) {
-    currentLeft -= COMBAT_SPEED * dt;
-    footerChar.style.transform = 'scaleX(-1)';
-    moved = true;
-  } else if (combatKeys.d && !combatKeys.a) {
-    currentLeft += COMBAT_SPEED * dt;
-    footerChar.style.transform = 'scaleX(1)';
-    moved = true;
+  // Prevent moving while swinging the sword or blocking
+  if (!isAttacking && !isBlocking) {
+    if (combatKeys.a && !combatKeys.d) {
+      currentLeft -= COMBAT_SPEED * dt;
+      footerChar.style.transform = 'scaleX(-1)';
+      moved = true;
+    } else if (combatKeys.d && !combatKeys.a) {
+      currentLeft += COMBAT_SPEED * dt;
+      footerChar.style.transform = 'scaleX(1)';
+      moved = true;
+    }
   }
 
   if (moved && !hasPressedMovementKeys) {
     hasPressedMovementKeys = true;
     setTimeout(() => {
       if (isCombatMode) {
-        bubbleText.innerHTML = 'Left click to attack! ⚔️';
+        bubbleText.innerHTML = 'Left click to attack! ⚔️<br>Space for block 🛡️';
         charBubble.classList.add('visible');
       }
     }, 5000);
