@@ -439,7 +439,7 @@ window.addEventListener('click', (e) => {
     const dist = Math.abs((charRect.left + charRect.width / 2) - (bossRect.left + bossRect.width / 2));
 
     if (dist < 250) { // Attack range
-      bossHP -= 100;
+      bossHP -= 1000;
       updateHPUI();
       bossChar.classList.add('hp-flash');
       setTimeout(() => bossChar.classList.remove('hp-flash'), 200);
@@ -661,7 +661,8 @@ function combatMovementLoop(timestamp) {
   }
   const playerHPBar = document.getElementById('player-hp-container');
   if (playerHPBar) {
-    playerHPBar.style.left = (currentLeft - 5) + 'px'; // Center it roughly
+    // 120px is the width of the HP bar defined in CSS
+    playerHPBar.style.left = (currentLeft + (footerChar.offsetWidth / 2) - 60) + 'px';
   }
 
   // Boss logic
