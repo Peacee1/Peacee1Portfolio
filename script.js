@@ -24,6 +24,24 @@ if (localStorage.getItem('death_reboot') === 'true') {
 }
 
 // Theme toggle
+// Health System State
+let playerHP = 500;
+const maxPlayerHP = 500;
+let bossHP = 9999;
+const maxBossHP = 9999;
+
+function updateHPUI() {
+  const pFill = document.getElementById('player-hp-fill');
+  const pText = document.getElementById('player-hp-text');
+  const bFill = document.getElementById('boss-hp-fill');
+  const bText = document.getElementById('boss-hp-text');
+
+  if (pFill) pFill.style.width = (playerHP / maxPlayerHP * 100) + '%';
+  if (pText) pText.textContent = `${Math.max(0, playerHP)} / ${maxPlayerHP}`;
+  if (bFill) bFill.style.width = (bossHP / maxBossHP * 100) + '%';
+  if (bText) bText.textContent = `${Math.max(0, bossHP)} / ${maxBossHP}`;
+}
+
 const toggleBtn = document.getElementById('theme-toggle');
 const savedTheme = localStorage.getItem('theme') || 'dark';
 if (savedTheme === 'light') {
@@ -236,6 +254,11 @@ document.getElementById('btn-yes').addEventListener('click', (e) => {
         setTimeout(() => {
           isCombatMode = true;
 
+          // Show player HP bar
+          const pHP = document.getElementById('player-hp-container');
+          if (pHP) pHP.style.display = 'block';
+          updateHPUI();
+
           footerChar.style.animation = 'none'; // freeze original animation
           const charRect = footerChar.getBoundingClientRect();
           footerChar.style.left = charRect.left + 'px';
@@ -409,6 +432,28 @@ window.addEventListener('click', (e) => {
   // Bypass browser cache to restart the GIF animation from frame 0
   footerChar.src = 'animation4.gif?t=' + lastAttackTime;
 
+  // Damage Boss if close enough
+  if (isBossActive) {
+    const charRect = footerChar.getBoundingClientRect();
+    const bossRect = bossChar.getBoundingClientRect();
+    const dist = Math.abs((charRect.left + charRect.width / 2) - (bossRect.left + bossRect.width / 2));
+
+    if (dist < 250) { // Attack range
+      bossHP -= 100;
+      updateHPUI();
+      bossChar.classList.add('hp-flash');
+      setTimeout(() => bossChar.classList.remove('hp-flash'), 200);
+      console.info("Combat: Hit Boss! HP:", bossHP);
+
+      if (bossHP <= 0) {
+        // Victory!
+        bossHP = 0;
+        updateHPUI();
+        triggerVictory();
+      }
+    }
+  }
+
   // Animation duration is exactly 400ms. Revert sprite to idle so it won't loop twice.
   setTimeout(() => {
     if (isCombatMode) footerChar.src = 'animation1.gif';
@@ -531,7 +576,27 @@ function combatMovementLoop(timestamp) {
             }, 1000);
           }
         } else {
-          triggerDeath();
+          // Instead of instant death, take 50 damage
+          p.el.remove();
+          projectiles.splice(index, 1);
+          playerHP -= 50;
+          updateHPUI();
+          footerChar.classList.add('hp-flash');
+          setTimeout(() => footerChar.classList.remove('hp-flash'), 200);
+          console.info("Combat: Hit by projectile! Player HP:", playerHP);
+
+          if (playerHP <= 0) {
+            playerHP = 0;
+            updateHPUI();
+            triggerDeath();
+          } else {
+            // If still alive but all projectiles cleared, boss attacks again
+            if (projectiles.length === 0 && !isDead) {
+              setTimeout(() => {
+                if (isCombatMode && !isDead) startBossAttack();
+              }, 1000);
+            }
+          }
         }
       }
     });
@@ -566,6 +631,12 @@ function combatMovementLoop(timestamp) {
             bossState = 'running_in';
             bossChar.style.display = 'block';
             bossChar.style.zIndex = '300';
+
+            // Show Boss HP Bar
+            const bHP = document.getElementById('boss-hp-container');
+            if (bHP) bHP.style.display = 'block';
+            updateHPUI();
+
             bossLeft = window.innerWidth;
             bossChar.style.left = bossLeft + 'px';
             bossChar.src = './boss_run.gif'; // Explicit relative path
@@ -584,9 +655,13 @@ function combatMovementLoop(timestamp) {
   currentLeft = Math.max(minLeft, Math.min(maxLeft, currentLeft));
 
   footerChar.style.left = currentLeft + 'px';
-  // keep bubble attached
+  // keep bubble and HP bar attached
   if (charBubble.classList.contains('visible')) {
     charBubble.style.left = currentLeft + 'px';
+  }
+  const playerHPBar = document.getElementById('player-hp-container');
+  if (playerHPBar) {
+    playerHPBar.style.left = (currentLeft - 5) + 'px'; // Center it roughly
   }
 
   // Boss logic
@@ -753,5 +828,39 @@ function triggerDeath() {
   // Reload after cinematic ends
   setTimeout(() => {
     window.location.reload();
+  }, 2500);
+}
+
+function triggerVictory() {
+  if (isDead) return;
+  isCinematic = true;
+  isBossActive = false;
+
+  // Boss death visuals
+  bossChar.style.filter = 'brightness(2) contrast(2) grayscale(1)';
+  bossChar.style.transition = 'opacity 2s, transform 2s';
+  bossChar.style.transform += ' scale(0)';
+  bossChar.style.opacity = '0';
+
+  const bossName = document.getElementById('boss-name');
+  if (bossName) bossName.style.display = 'none';
+  const bossHPContainer = document.getElementById('boss-hp-container');
+  if (bossHPContainer) bossHPContainer.style.display = 'none';
+
+  console.info("Combat: VICTORY!");
+
+  // Victory dialogue from char
+  setTimeout(() => {
+    bubbleText.innerHTML = "I did it! The Wizard is gone! 🎉<br>Time to see the portfolio...";
+    charBubble.classList.add('visible');
+
+    setTimeout(() => {
+      charBubble.classList.remove('visible');
+      isCinematic = false;
+      isCombatMode = false;
+      // Optionally hide player hp bar
+      const pHP = document.getElementById('player-hp-container');
+      if (pHP) pHP.style.display = 'none';
+    }, 5000);
   }, 2500);
 }

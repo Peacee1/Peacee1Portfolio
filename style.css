@@ -845,6 +845,92 @@ footer p {
   color: var(--muted-color);
 }
 
+/* ─── HEALTH BARS ─── */
+#boss-hp-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  max-width: 800px;
+  z-index: 1000;
+  text-align: center;
+  display: none;
+  /* Only show in combat */
+}
+
+#boss-hp-name {
+  font-family: var(--font-pixel);
+  color: #ff3333;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  text-shadow: 2px 2px #000;
+  letter-spacing: 2px;
+}
+
+#boss-hp-text {
+  font-family: var(--font-vt);
+  color: #fff;
+  font-size: 1rem;
+  margin-top: 4px;
+}
+
+#player-hp-container {
+  position: absolute;
+  bottom: calc(100% + 180px);
+  /* Above the head */
+  left: 0;
+  width: 120px;
+  z-index: 200;
+  text-align: center;
+  display: none;
+}
+
+#player-hp-text {
+  font-family: var(--font-vt);
+  color: #fff;
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+
+.hp-bar-bg {
+  height: 12px;
+  background: #220000;
+  border: 2px solid #555;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+#boss-hp-fill,
+#player-hp-fill {
+  height: 100%;
+  width: 100%;
+  transition: width 0.3s ease-out;
+}
+
+#boss-hp-fill {
+  background: linear-gradient(to right, #800000, #ff0000, #ff6666);
+}
+
+#player-hp-fill {
+  background: linear-gradient(to right, #004400, #00ff00, #88ff88);
+}
+
+.hp-flash {
+  animation: hp-flash-anim 0.2s alternate 2;
+}
+
+@keyframes hp-flash-anim {
+  from {
+    filter: brightness(1);
+  }
+
+  to {
+    filter: brightness(2) contrast(1.5);
+  }
+}
+
 /* ─── ANIMATION GIF ─── */
 .anim-showcase {
   display: block;
